@@ -70,6 +70,27 @@ public abstract class ActionBase {
 
     }
 
+    protected void redirect(ForwardConst action, ForwardConst command)
+            throws ServletException, IOException {
+
+        //URLを構築
+        String redirectUrl = request.getContextPath() + "/?action=" + action.getValue();
+        if (command != null) {
+            redirectUrl = redirectUrl + "&command=" + command.getValue();
+        }
+
+        //URLへリダイレクト
+        response.sendRedirect(redirectUrl);
+
+    }
+
+    /**
+     * URLを構築しリダイレクトを行う
+     * @param action パラメータに設定する値
+     * @param command パラメータに設定する値
+     * @throws ServletException
+     * @throws IOException
+     */
     protected boolean checkToken() throws ServletException, IOException {
 
         //パラメータからtokenの値を取得
