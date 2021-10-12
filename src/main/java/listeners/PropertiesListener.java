@@ -21,7 +21,7 @@ public class PropertiesListener {
     public void contextInitialized(ServletContextEvent arg0) {
         ServletContext context = arg0.getServletContext();
 
-        //プロパティファイルを読み込みアプリケーションスコープに設定
+        //プロパティファイルを読み込み、アプリケーションスコープに設定する
         try {
             InputStream is = PropertiesListener.class.getClassLoader().getResourceAsStream("application.properties");
 
