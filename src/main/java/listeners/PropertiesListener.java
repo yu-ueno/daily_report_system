@@ -4,11 +4,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.Properties;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
-import com.sun.xml.fastinfoset.sax.Properties;
 
 public class PropertiesListener {
 
@@ -21,7 +21,7 @@ public class PropertiesListener {
     public void contextInitialized(ServletContextEvent arg0) {
         ServletContext context = arg0.getServletContext();
 
-        //プロパティファイルを読み込み、アプリケーションスコープに設定する
+        //プロパティファイルを読み込みアプリケーションスコープに設定
         try {
             InputStream is = PropertiesListener.class.getClassLoader().getResourceAsStream("application.properties");
 
