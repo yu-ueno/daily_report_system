@@ -65,7 +65,8 @@ public class EmployeeAction extends ActionBase {
         forward(ForwardConst.FW_EMP_NEW);
     }
 
-    public void create()throws ServletException, IOException{
+    //新規登録
+    public void create() throws ServletException, IOException{
 
         if(checkToken()) {
 
@@ -107,5 +108,22 @@ public class EmployeeAction extends ActionBase {
 
     }
 
+    //詳細画面表示
+    public void show() throws ServletException, IOException{
+
+        EmployeeView ev = service.findOne(toNumber(getRequestParam(AttributeConst.EMP_ID)));
+
+        if (ev == null || ev.getDeleteFlag() == AttributeConst.DEL_FLAG_TRUE.getIntegerValue()) {
+
+            //データが取得できなかった、または論理削除されている場合はエラー画面を表示
+            forward(ForwardConst.FW_ERR_UNKNOWN);
+            return;
+        }
+
+        putRequestScope(AttributeConst.EMPLOYEE, ev);
+
+        //詳細画面を表示
+        forward(ForwardConst.FW_EMP_SHOW);
+    }
 
 }
