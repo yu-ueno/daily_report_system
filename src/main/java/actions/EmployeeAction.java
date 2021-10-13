@@ -27,7 +27,9 @@ public class EmployeeAction extends ActionBase {
         service.close();
     }
 
-    //一覧画面設定
+    /*
+     * 一覧画面設定
+     */
     public void index() throws ServletException, IOException{
 
         int page = getPage();
@@ -55,7 +57,9 @@ public class EmployeeAction extends ActionBase {
 
     }
 
-    //新規登録画面表示
+    /*
+     * 新規登録画面表示
+     */
     public void entryNew() throws ServletException, IOException {
 
         putRequestScope(AttributeConst.TOKEN, getTokenId());
@@ -65,7 +69,9 @@ public class EmployeeAction extends ActionBase {
         forward(ForwardConst.FW_EMP_NEW);
     }
 
-    //新規登録
+    /*
+     * 新規登録処理
+     */
     public void create() throws ServletException, IOException{
 
         if(checkToken()) {
@@ -85,8 +91,8 @@ public class EmployeeAction extends ActionBase {
             //従業員情報登録
             List<String> errors = service.create(ev, pepper);
 
+            //エラーチェック
             if (errors.size() > 0) {
-                //登録中にエラーがあった場合
 
                 putRequestScope(AttributeConst.TOKEN, getTokenId());
                 putRequestScope(AttributeConst.EMPLOYEE, ev);
@@ -96,7 +102,6 @@ public class EmployeeAction extends ActionBase {
                 forward(ForwardConst.FW_EMP_NEW);
 
             } else {
-                //登録中にエラーがなかった場合
 
                 //セッションに登録完了のフラッシュメッセージを設定
                 putSessionScope(AttributeConst.FLUSH, MessageConst.I_REGISTERED.getMessage());
@@ -108,7 +113,9 @@ public class EmployeeAction extends ActionBase {
 
     }
 
-    //詳細画面表示
+    /*
+     * 詳細画面表示
+     */
     public void show() throws ServletException, IOException{
 
         EmployeeView ev = service.findOne(toNumber(getRequestParam(AttributeConst.EMP_ID)));
@@ -126,7 +133,9 @@ public class EmployeeAction extends ActionBase {
         forward(ForwardConst.FW_EMP_SHOW);
     }
 
-    //編集画面表示
+    /*
+     * 編集画面表示
+     */
     public void edit() throws ServletException, IOException {
 
         //idを条件に従業員データを取得する
@@ -146,6 +155,69 @@ public class EmployeeAction extends ActionBase {
         //編集画面表示
         forward(ForwardConst.FW_EMP_EDIT);
 
+    }
+
+    /*
+     * 更新処理
+     */
+    public void update() throws ServletException, IOException {
+
+        //CSRF対策 tokenのチェック
+        if (checkToken()) {
+            EmployeeView ev = new EmployeeView(
+                    toNumber(getRequestParam(AttributeConst.EMP_ID)),
+                    getRequestParam(AttributeConst.EMP_CODE),
+                    getRequestParam(AttributeConst.EMP_NAME),
+                    getRequestParam(AttributeConst.EMP_PASS),
+                    toNumber(getRequestParam(AttributeConst.EMP_ADMIN_FLG)),
+                    null,
+                    null,
+                    AttributeConst.DEL_FLAG_FALSE.getIntegerValue());
+
+            //アプリケーションスコープからpepper文字列を取得
+            String pepper = getContextScope(PropertyConst.PEPPER);
+
+            //従業員情報更新
+            List<String> errors = service.update(ev, pepper);
+
+            //エラーチェック
+            if (errors.size() > 0) {
+
+                //CSRF対策用トークン
+                putRequestScope(AttributeConst.TOKEN, getTokenId());
+                putRequestScope(AttributeConst.EMPLOYEE, ev);
+                putRequestScope(AttributeConst.ERR, errors);
+
+                //編集画面再表示
+                forward(ForwardConst.FW_EMP_EDIT);
+            } else {
+
+                //セッションに更新完了のフラッシュメッセージを設定
+                putSessionScope(AttributeConst.FLUSH, MessageConst.I_UPDATED.getMessage());
+
+                //一覧画面にリダイレクト
+                redirect(ForwardConst.ACT_EMP, ForwardConst.CMD_INDEX);
+            }
+        }
+    }
+
+    /*
+     * 削除処理
+     */
+    public void destroy() throws ServletException, IOException {
+
+        //CSRF対策 tokenのチェック
+        if (checkToken()) {
+
+            //idを条件に従業員データを論理削除する
+            service.destroy(toNumber(getRequestParam(AttributeConst.EMP_ID)));
+
+            //セッションに削除完了のフラッシュメッセージを設定
+            putSessionScope(AttributeConst.FLUSH, MessageConst.I_DELETED.getMessage());
+
+            //一覧画面にリダイレクト
+            redirect(ForwardConst.ACT_EMP, ForwardConst.CMD_INDEX);
+        }
     }
 
 }
