@@ -75,6 +75,25 @@ public class ReportService extends ServiceBase {
     }
 
     /**
+     * 画面から入力された日報の登録内容を元にデータを1件作成し、日報テーブルに登録する
+     * @param rv 日報の登録内容
+     * @return バリデーションで発生したエラーのリスト
+     */
+    public List<String> create(ReportView rv) {
+
+        List<String> errors = ReportValidator.validate(rv);
+        if (errors.size() == 0) {
+            LocalDateTime ldt = LocalDateTime.now();
+            rv.setCreatedAt(ldt);
+            rv.setUpdatedAt(ldt);
+            createInternal(rv);
+        }
+
+        //バリデーションで発生したエラーを返却（エラーがなければ0件の空リスト）
+        return errors;
+    }
+
+    /**
      * 更新処理
      * @param rv 更新内容
      * @return バリデーションで発生したエラーのリスト
