@@ -59,6 +59,17 @@ public class ReportService extends ServiceBase {
         return ReportConverter.toViewList(reports);
     }
 
+    /**
+     * 日報テーブルデータの件数を取得
+     * @return データの件数
+     */
+    public long countAll() {
+        long reports_count = (long) em.createNamedQuery(JpaConst.Q_REP_COUNT, Long.class)
+                .getSingleResult();
+        return reports_count;
+    }
+
+
     public ReportView findOne(int id) {
         return ReportConverter.toView(findOneInternal(id));
     }
